@@ -3,7 +3,7 @@ import graphviz
 
 class Automata:
 
-    def __init__(self, initial: str, final: list[str], ttable: dict, alphabet: list=None, states: list=None) -> None:
+    def __init__(self, initial: str, final: list[str], ttable: dict, alphabet: list=[], states: list=[]) -> None:
         self.alphabet = alphabet
         self.states = states
         self.initial = initial
@@ -38,7 +38,7 @@ class Automata:
 
     def export(self, filename: str = "output"):
 
-        with open(filename.join(("", ".gv")), "w") as file:
+        with open(filename.join(("", ".gv")), "w", encoding="utf-8") as file:
             file.write("digraph finite_state_machine {\n    rankdir=LR;\n\n\t")
             file.write("node [shape = point]; Start;\n\t")
             file.write(f"node [shape = doublecircle]; {', '.join(self.final)};\n\t")
@@ -57,8 +57,8 @@ class Automata:
 
         with open(filename.join(("", ".txt")), "w") as file:
             file.write(f"Estados (Q): {self.states}\n")
-            file.write(f"Alphabeto (Σ): {self.alphabet}\n")
+            #file.write(f"Alfabeto: {self.alphabet}\n")
             file.write(f"Inicial (q0): {self.initial}\n")
             file.write(f"Finales (F): {self.final}\n")
-            file.write(f"Transicion (δ)::\n")
+            file.write(f"Tabla de Transicion:\n")
             file.write(str(self))
