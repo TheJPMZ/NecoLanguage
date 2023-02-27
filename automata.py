@@ -1,18 +1,34 @@
 import graphviz
 
-
 class Automata:
 
-    def __init__(self, initial: str, final: list[str], ttable: dict, alphabet: list=[], states: list=[]) -> None:
-        self.alphabet = alphabet
-        self.states = states
+    def __init__(self, initial: str, final: list[str], ttable: dict) -> None:
         self.initial = initial
         self.final = final
         self.ttable = ttable
+
+        self.alphabet = []
+        self.set_alphabet()
+
+        self.states = []
+        self.set_states()
+
         self.hasEpsilon = False
 
+    def set_alphabet(self, alphabet: list[str] = None):
+        if alphabet is None:
+            self.alphabet = list(set([x for y in self.ttable.values() for x in y.keys()]))
+        else:
+            self.alphabet = alphabet
+
+    def set_states(self, states: list[str] = None):
+        if states is None:
+            self.states = list(set([x for y in self.ttable.keys() for x in y])) + self.final
+        else:
+            self.states = states
+
     def __str__(self) -> str:
-        header_list = self.alphabet + (["ε"] if self.hasEpsilon else [])
+        header_list = self.alphabet
         divisor = len(str(self.initial)) + 2
 
         def text_format(text, filler=" "):
@@ -55,10 +71,10 @@ class Automata:
 
         graphviz.render(engine="dot", format="png", filepath=filename.join(("", ".gv")))
 
-        with open(filename.join(("", ".txt")), "w") as file:
+        with open(filename.join(("", ".txt")), "w", encoding="utf-8") as file:
             file.write(f"Estados (Q): {self.states}\n")
-            #file.write(f"Alfabeto: {self.alphabet}\n")
+            file.write(f"Alfabeto (∑): {[x for x in self.alphabet if x != 'ε']}\n")
             file.write(f"Inicial (q0): {self.initial}\n")
             file.write(f"Finales (F): {self.final}\n")
-            file.write(f"Tabla de Transicion:\n")
+            file.write(f"Tabla de Transicion (δ):\n")
             file.write(str(self))

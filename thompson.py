@@ -3,6 +3,7 @@ from automata import Automata
 
 
 def thompson(regex: str):
+
     if not check_regex(regex):
         return None
 
@@ -68,6 +69,7 @@ def thompson(regex: str):
             afn = Automata(start, [end], transitions)
 
             stack.append(afn)
+
         elif char == "?":
             start, end = start_end(counter)
 
@@ -92,4 +94,4 @@ def thompson(regex: str):
 
 
 if __name__ == "__main__":
-    thompson("ab|c*").export()
+    thompson("(a|b)c").export()

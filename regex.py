@@ -51,6 +51,7 @@ def check_regex(regex: str) -> bool:
 
     return True
 
+
 def transform(regex: str) -> str:
     """
     This function transforms implicit concatenation into explicit concatenation
@@ -68,6 +69,7 @@ def transform(regex: str) -> str:
         new_regex += char
 
     return new_regex
+
 
 def to_postfix(regex: str):
     """
