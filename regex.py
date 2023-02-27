@@ -9,15 +9,17 @@ def check_regex(regex: str) -> bool:
     :param regex: String
     :return: Boolean
     """
+    error_stack = []
 
     if not regex or regex == "ε":
-        raise ValueError("The regex is empty")
+        error_stack.append("The regex is empty")
+        raise ValueError(error_stack)
 
     if regex[0] in OPERATORS:
-        raise ValueError("The regex cannot start with an operator (|, *, +, ?, .)")
+        error_stack.append("The regex cannot start with an operator (|, *, +, ?, .)")
 
     if regex[-1] in "|.":
-        raise ValueError("The regex cannot end with | or .")
+        error_stack.append("The regex cannot end with | or .")
 
     if "(" in regex or ")" in regex:
         stack = []
@@ -26,28 +28,29 @@ def check_regex(regex: str) -> bool:
                 stack.append(i)
             elif j == ")":
                 if not stack:
-                    raise ValueError(f"The regex contains an unopened parenthesis. (Index {i})")
+                    error_stack.append(f"The regex contains an unopened parenthesis. (Index {i})")
+                    break
                 if regex[i - 1] == "(":
-                    raise ValueError(f"The regex contains an empty parenthesis. (Index {stack[-1]})")
+                    error_stack.append(f"The regex contains an empty parenthesis. (Index {stack[-1]})")
+                    break
                 stack.pop()
         if stack:
-            raise ValueError(f"The regex contains an unclosed parenthesis. (Index {stack.pop()})")
-
-        pass
+            error_stack.append(f"The regex contains an unclosed parenthesis. (Index {stack[-1]})")
 
     for index, char in enumerate(regex):
         if char not in CHARACTERS + "".join(OPERATORS.keys()) + "()":
-            raise ValueError(f"The regex contains an invalid character '{char}'")
+            error_stack.append(f"The regex contains an invalid character '{char}' (Index {index})")
 
         if char in "*+?":
             if regex[index - 1] in OPERATORS:
-                raise ValueError(
-                    f"The regex contains two operators in a row. '{regex[index - 1]}{char}' (Index {index - 1})")
+                error_stack.append(f"The regex contains an operator before a quantifier. '{regex[index - 1]}{char}' (Index {index - 1})")
 
         if char in OPERATORS:
             if regex[index - 1] == char:
-                raise ValueError(
-                    f"The regex contains two identical operators in a row. '{regex[index - 1]}{char}' (Index {index - 1})")
+                error_stack.append(f"The regex contains two identical operators in a row. '{regex[index - 1]}{char}' (Index {index - 1})")
+
+    if error_stack:
+        raise ValueError(error_stack)
 
     return True
 
